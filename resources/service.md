@@ -1,7 +1,5 @@
 # K8s
-
 ## Prima
-
 ### Services
 1. Service object operates at Layer 4 (according to the OSI model). This means that it only forwards TCP and UDP connections and doesn’t look inside of those connections.
 
@@ -26,9 +24,9 @@ metadata:
 spec:
 	type: NodePort
 	ports:
-		- port: 8080
-			nodePort: 30050 
-			targetPort: 8080 
+		- port: 8080 # service port
+			nodePort: 30050 # port on node, range 30000 - 32767
+			targetPort: 8080 # port on pod/container
 			protocol: TCP
 	selector:
 		app: hello-world 

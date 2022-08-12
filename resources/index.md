@@ -73,31 +73,3 @@ Annotations are used to:
 
 4. Annotation keys use the same format as label keys. However, because they are often used to communicate information between tools, the “namespace” part of the key is more important.
 
-
-### Ingress class
-1. Ingresses can be implemented by different controllers, often with different configuration. Each Ingress should specify an ingress class
-
-2. An Ingress Class is a reference to an IngressClass resource that contains additional configuration including the name of the controller that should implement the class
-
-3. Structure
-```yaml
-apiVersion: networking.k8s.io/v1
-kind: IngressClass
-metadata:
-  name: external-lb-1  
-labels:
-    app.kubernetes.io/component: controller
-  annotations:
-    ingressclass.kubernetes.io/is-default-class: "true"
-spec:
-  controller: example.com/ingress-controller
-  parameters:
-    # The parameters for this IngressClass are specified in a
-    # ClusterIngressParameter (API group k8s.example.net) named
-    # "external-config-1". This definition tells Kubernetes to
-    # look for a cluster-scoped parameter resource.
-    scope: Cluster
-    apiGroup: k8s.example.net
-    kind: ClusterIngressParameter
-    name: external-config-1
-```
