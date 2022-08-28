@@ -2,6 +2,56 @@
 
 ## Prima
 
+### AuthN & AuthZ
+1. Intro
+- Password based authentication disabled 
+- SSH Key based authentication using certs
+
+2. Who can access?
+- Files – Username and Passwords
+- Files – Username and Tokens
+- Certificates
+- External Authentication providers e.g LDAP 
+- Service Accounts
+
+3. What can they do?
+- RBAC Authorization 
+- ABAC Authorization 
+- Node Authorization 
+- Webhook Mode
+
+5. AuthN Modes
+- Static Password Files (handled as basic auth)
+```yaml
+spec: 
+	containers: 
+	- command:
+	- kube-apiserver 
+	- --authorization-mode=Node,RBAC
+	- --basic-auth-file=xyz.scv
+
+# xyz.scv
+# password123,user1,u0001,group1
+# password123,user2,u0002,group1
+```
+
+- Static Token Files (handled as bearer token)
+```yaml
+spec: 
+	containers: 
+	- command:
+	- kube-apiserver 
+	- --authorization-mode=Node,RBAC
+	- --token-auth-file=xyz.csv
+
+# xyz.scv
+# KpjCVbI7rCFAHYPkByTIzRb7gu1cUc4B,user10,u0010,group1 
+# rJjncHmvtXHc6MlWQddhtvNyyhgTdxSC,user11,u0011,group2
+```
+
+- Certs
+
+
 ### RBAC
 1. Every request that comes to Kubernetes is associated with some identity. Even a request with no identity is associated with the system:unauthenticated group.
 

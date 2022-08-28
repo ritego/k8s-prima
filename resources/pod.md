@@ -143,6 +143,7 @@ spec:
               - S2
           topologyKey: topology.kubernetes.io/zone
 ```
+
 7. Configure Pods/Containers
 ```yaml
 spec:
@@ -167,3 +168,49 @@ spec:
 		- cpu
 		- memory
 		- custom.com/resource
+
+8. Topology Constraint
+```yaml
+kind: Pod
+apiVersion: v1
+metadata:
+  name: my-pod
+  labels:
+    foo: bar
+spec:
+  topologySpreadConstraints:
+  - maxSkew: 1 # The maximum difference in number of pods between any two topology domains. The default is 1, and you cannot specify a value of 0
+    topologyKey: topology.kubernetes.io/zone # The key of a node label. Nodes with this key and identical value are considered to be in the same topology.
+    whenUnsatisfiable: DoNotSchedule | ScheduleAnyway # How to handle a pod if it does not satisfy the spread constraint. 
+    labelSelector: # pods to be spread
+      matchLabels:
+        foo: bar
+  containers:
+  - image: "docker.io/ocpqe/hello-pod"
+    name: hello-pod
+
+# For example, the above matches on pods labeled foo:bar, distributes among zones, specifies a skew of 1, and does not schedule the pod if it does not meet these requirements.
+```
+
+### PriorityClass
+1. To use priority and preemption:
+  - Add one or more PriorityClasses
+  - Create Pods with priority ClassName set to one of the added PriorityClasses. Of course you do not need to create the Pods directly; normally you would add priorityClassName to the Pod template of a collection object like a Deployment.
+
+2. Structure
+```yaml
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: high-priority
+value: 1000000
+globalDefault: false # if true, pods with no priority class name gets this value, else they get zero
+preemptionPolicy: Never # will be scheduled ahead of other queued pods, as soon as sufficient cluster resources "naturally" become free
+description: "This priority class should be used for XYZ service pods only."
+```
+
+3. Add priority class to pod
+```yaml
+spec:
+  priorityClassName: high-priority
+```

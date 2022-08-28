@@ -77,6 +77,21 @@
     - apt-get upgrade -y kubelet=1.12.0-00
     - systemctl restart kubelet
  
+ ```bash
+ $ k get node
+ $ kubeadm version
+ $ kubectl version
+ $ kubelet --version
+ $ apt update
+ $ apt show kubeadm|kubectl|kubelet -a | grep 1.24
+ $ apt install kubeadm=1.24.1-00 kubectl=1.24.1-00 kubelet=1.24.1-00 
+ $ systemctl restart kubeadm|kubectl|kubelet
+ $ service kubelet status
+
+ $ kubeadm token create --print-join-command
+ k get node
+ ```
+
  ### Backups
  1. Resource Configs
  ```
@@ -95,15 +110,20 @@ $ ETCDCTL_API=3 etcdctl \
 
 $ ETCDCTL_API=3 etcdctl \
      snapshot status snapshot.db
+     
+$ ETCDCTL_API=3 etcdctl snapshot save /tmp/etcd-backup.db \
+--cacert /etc/kubernetes/pki/etcd/ca.crt \
+--cert /etc/kubernetes/pki/etcd/server.crt \
+--key /etc/kubernetes/pki/etcd/server.key
 ```
 
 - Restore
 ```bash
 $ service kube-apiserver stop
-$  ETCDCTL_API=3 etcdctl \
-snapshot restore snapshot.db \
---data-dir /var/lib/etcd-from-backup \
---initial-cluster master-1=https://192.168.5.11:2380,master-2=https://192.168.5.12:2380 \ 
---initial-cluster-token etcd-cluster-1 \
---initial-advertise-peer-urls https://${INTERNAL_IP}:2380
+
+$ ETCDCTL_API=3 etcdctl snapshot restore /tmp/etcd-backup.db \
+--data-dir /var/lib/etcd-backup \
+--cacert /etc/kubernetes/pki/etcd/ca.crt \
+--cert /etc/kubernetes/pki/etcd/server.crt \
+--key /etc/kubernetes/pki/etcd/server.key
 ```
